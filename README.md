@@ -113,7 +113,7 @@ def spawn_monsters(stage):
 # 스테이지별 플랫폼 생성
 def generate_platforms(stage):
     platforms = [
-        pygame.Rect(0, 550, 800, 50)  # 항상 바닥 존재
+    pygame.Rect(0, 550, 800, 50)  # 항상 바닥 존재
     ]
     for _ in range(min(stage + 1, 5)):  # 스테이지에 따라 최대 5개까지 플랫폼
         x = random.randint(100, 700)
