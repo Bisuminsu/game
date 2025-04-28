@@ -45,7 +45,6 @@ player_hp = 100
 damage_cooldown = 0
 
 
-
 # 공격 관련
 attack_cooldown = 0
 attack_duration = 10
@@ -113,7 +112,7 @@ def spawn_monsters(stage):
 # 스테이지별 플랫폼 생성
 def generate_platforms(stage):
     platforms = [
-    pygame.Rect(0, 550, 800, 50)  # 항상 바닥 존재
+        pygame.Rect(0, 550, 800, 50)  # 항상 바닥 존재
     ]
     for _ in range(min(stage + 1, 5)):  # 스테이지에 따라 최대 5개까지 플랫폼
         x = random.randint(100, 700)
@@ -167,9 +166,22 @@ while running:
         else:
             attack_rect = pygame.Rect(player_pos[0] - 30, player_pos[1] + 10, 30, 40)
 
-    # 중력 적용
+    # 중력 적용 후 위치 제한
     player_pos[1] += velocity_y
     velocity_y += gravity
+    
+    # === 화면 경계 제한 ===
+    if player_pos[0] < 0:
+        player_pos[0] = 0
+    if player_pos[0] > WIDTH - player_size[0]:
+        player_pos[0] = WIDTH - player_size[0]
+    
+    if player_pos[1] < 0:
+        player_pos[1] = 0
+    if player_pos[1] > HEIGHT - player_size[1]:
+        player_pos[1] = HEIGHT - player_size[1]
+    
+
 
     # 캐릭터 Rect 갱신
     player_rect = pygame.Rect(player_pos[0], player_pos[1], *player_size)
@@ -206,18 +218,20 @@ while running:
             attack_rect = None
     if attack_cooldown > 0:
         attack_cooldown -= 1
-
     # 몬스터 모두 처치 시 Stage Clear
     if not monsters and not stage_clear:
         stage_clear = True
         clear_timer = 120  # 2초간 Clear 표시
-
+    
+    # Stage Clear 후 처리
     if stage_clear:
         clear_timer -= 1
         if clear_timer <= 0:
             stage += 1
             monsters = spawn_monsters(stage)
+            platforms = generate_platforms(stage)  # 새로운 맵 생성!
             stage_clear = False
+    
 
     # 플랫폼 그리기
     for platform in platforms:
